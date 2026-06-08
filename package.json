@@ -1,0 +1,25 @@
+{
+  "name": "entrega-postman-api-productos",
+  "version": "1.0.0",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "postman:info": "echo Importar Juan_Sebastian_Cajiao_Cardona.postman_collection.json en Postman"
+  },
+  "keywords": [
+    "postman",
+    "api",
+    "productos",
+    "mongodb"
+  ],
+  "author": "Juan Sebastian Cajiao Cardona",
+  "license": "ISC",
+  "description": "Backend y evidencias para la actividad Pruebas Automatizadas con Postman.",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.16.1"
+  }
+}

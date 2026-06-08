@@ -1,0 +1,337 @@
+{
+  "info": {
+    "_postman_id": "59e5122d-bd4c-43fe-9a58-a9427545c42b",
+    "name": "Juan Sebastian Cajiao Cardona - API Productos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49473825",
+    "_collection_link": "https://go.postman.co/collection/49473825-59e5122d-bd4c-43fe-9a58-a9427545c42b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "01 - Crear producto",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "const codigo = Number(pm.variables.replaceIn('{{$timestamp}}')) + pm.info.iteration;\r",
+              "pm.collectionVariables.set('CODIGO_PRODUCTO', codigo);\r"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "pm.test('Codigo de estado es 201', function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test('Respuesta contiene precio de tipo number', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.precio).to.be.a('number');\r",
+              "});\r",
+              "\r",
+              "pm.test('Respuesta contiene _id y codigo enviado', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('_id');\r",
+              "    pm.expect(jsonData.codigo).to.eql(Number(pm.collectionVariables.get('CODIGO_PRODUCTO')));\r",
+              "});\r",
+              "\r",
+              "pm.test('Tiempo de respuesta menor a 5000 milisegundos', function () {\r",
+              "    pm.expect(pm.response.responseTime).to.be.below(5000);\r",
+              "});\r",
+              "\r",
+              "pm.test('Guardar ID del producto creado', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.collectionVariables.set('ID_PRODUCTO', jsonData._id);\r",
+              "});\r"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigo\": {{CODIGO_PRODUCTO}},\n  \"nombre\": \"Teclado c63 MAX\",\n  \"precio\": 15000,\n  \"categoria\": \"Electrodomestico\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "02 - Obtener productos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "pm.test('Codigo de estado es 200', function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test('Respuesta es un array y actualiza CANTIDAD_PRODUCTOS', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.be.an('array');\r",
+              "    pm.collectionVariables.set('CANTIDAD_PRODUCTOS', jsonData.length);\r",
+              "});\r",
+              "\r",
+              "pm.test('Los productos contienen el campo codigo', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    if (jsonData.length > 0) {\r",
+              "        pm.expect(jsonData[0]).to.have.property('codigo');\r",
+              "        pm.expect(jsonData[0].codigo).to.be.a('number');\r",
+              "    }\r",
+              "});\r"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": []
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "03 - Obtener producto por ID",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "pm.test('Codigo de estado es 200', function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test('Respuesta contiene el _id correcto', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    const idEsperado = pm.collectionVariables.get('ID_PRODUCTO');\r",
+              "    pm.expect(jsonData).to.have.property('_id');\r",
+              "    pm.expect(jsonData._id).to.eql(idEsperado);\r",
+              "});\r",
+              "\r",
+              "pm.test('Respuesta contiene campo codigo', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('codigo');\r",
+              "});\r"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/{{ID_PRODUCTO}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{ID_PRODUCTO}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "04 - Actualizar producto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "pm.test('Codigo de estado es 200', function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Respuesta contiene atributo 'producto' de tipo object\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('producto');\r",
+              "    pm.expect(jsonData.producto).to.be.an('object');\r",
+              "});\r",
+              "\r",
+              "pm.test('Producto actualizado conserva el _id y cambia el nombre', function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData.producto._id).to.eql(pm.collectionVariables.get('ID_PRODUCTO'));\r",
+              "    pm.expect(jsonData.producto.nombre).to.eql('Teclado c63 MAX V1');\r",
+              "});\r"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/{{ID_PRODUCTO}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{ID_PRODUCTO}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"codigo\": {{CODIGO_PRODUCTO}},\n  \"nombre\": \"Teclado c63 MAX V1\",\n  \"precio\": 18000,\n  \"categoria\": \"Electrodomestico\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "05 - Eliminar producto",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {},
+            "exec": [
+              "pm.test('Codigo de estado es 200', function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Respuesta contiene mensaje 'Producto eliminado'\", function () {\r",
+              "    const jsonData = pm.response.json();\r",
+              "    pm.expect(jsonData).to.have.property('mensaje');\r",
+              "    pm.expect(jsonData.mensaje).to.eql('Producto eliminado');\r",
+              "});\r",
+              "\r",
+              "pm.test('Actualizar CANTIDAD_PRODUCTOS al eliminar', function () {\r",
+              "    let cantidad = Number(pm.collectionVariables.get('CANTIDAD_PRODUCTOS') || 0);\r",
+              "    pm.collectionVariables.set('CANTIDAD_PRODUCTOS', Math.max(cantidad - 1, 0));\r",
+              "});\r"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/{{ID_PRODUCTO}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "{{ID_PRODUCTO}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:3000/api/productos",
+      "type": "string"
+    },
+    {
+      "key": "ID_PRODUCTO",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "CANTIDAD_PRODUCTOS",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "CODIGO_PRODUCTO",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
